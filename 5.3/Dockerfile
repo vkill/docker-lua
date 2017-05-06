@@ -1,8 +1,6 @@
 FROM buildpack-deps:jessie
 
 
-ARG LUA_MAKE_INSTALL_OPTIONS=""
-
 ENV LUA_MAJOR 5.3
 ENV LUA_VERSION 5.3.4
 ENV LUA_DOWNLOAD_URL https://www.lua.org/ftp/lua-5.3.4.tar.gz
@@ -21,13 +19,12 @@ RUN set -ex \
   && cd /usr/src/lua \
   \
   && make linux test \
-  && make linux install ${LUA_MAKE_INSTALL_OPTIONS} \
+  && make linux install \
   \
   && cd / \
   && rm -r /usr/src/lua
 
 
-ARG LUAROCKS_CONFIGURE_OPTIONS=""
 
 ENV LUAROCKS_VERSION 2.4.2
 ENV LUAROCKS_DOWNLOAD_URL http://luarocks.github.io/luarocks/releases/luarocks-2.4.2.tar.gz
@@ -52,7 +49,7 @@ RUN set -ex \
   \
   && cd /usr/src/luarocks \
   \
-  && ./configure --lua-version=${LUA_MAJOR} --with-lua=/usr/local ${LUAROCKS_CONFIGURE_OPTIONS} \
+  && ./configure --lua-version=${LUA_MAJOR} --with-lua=/usr/local \
   && make build \
   && make install \
   \
