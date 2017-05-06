@@ -5,14 +5,16 @@ ARG LUA_MAKE_MYCFLAGS=""
 ARG LUA_MAKE_CC=""
 
 
+ENV LUA_MAJOR 5.3
 ENV LUA_VERSION 5.3.4
+ENV LUA_DOWNLOAD_URL https://www.lua.org/ftp/lua-5.3.4.tar.gz
 ENV LUA_DOWNLOAD_SHA256 f681aa518233bc407e23acf0f5887c884f17436f000d453b2491a9f11a52400c
 
 
 RUN set -ex \
   \
-  && wget -O lua.tar.gz "https://www.lua.org/ftp/lua-${LUA_VERSION}.tar.gz" \
-  && echo "$LUA_DOWNLOAD_SHA256 *lua.tar.gz" | sha256sum -c - \
+  && wget -O lua.tar.gz "${LUA_DOWNLOAD_URL}" \
+  && echo "${LUA_DOWNLOAD_SHA256} *lua.tar.gz" | sha256sum -c - \
   \
   && mkdir -p /usr/src/lua \
   && tar -xzf lua.tar.gz -C /usr/src/lua --strip-components=1 \
