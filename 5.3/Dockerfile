@@ -25,6 +25,7 @@ RUN set -ex \
   && make linux test \
   && make linux install MYCFLAGS="${LUA_MAKE_MYCFLAGS}" CC="${LUA_MAKE_CC}" \
   \
+  && cd / \
   && rm -r /usr/src/lua
 
 
