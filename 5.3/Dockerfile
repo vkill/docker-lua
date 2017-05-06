@@ -1,9 +1,7 @@
 FROM buildpack-deps:jessie
 
 
-ARG LUA_MAKE_MYCFLAGS=""
-ARG LUA_MAKE_CC=""
-
+ARG LUA_MAKE_INSTALL_OPTIONS=""
 
 ENV LUA_MAJOR 5.3
 ENV LUA_VERSION 5.3.4
@@ -23,10 +21,43 @@ RUN set -ex \
   && cd /usr/src/lua \
   \
   && make linux test \
-  && make linux install MYCFLAGS="${LUA_MAKE_MYCFLAGS}" CC="${LUA_MAKE_CC}" \
+  && make linux install ${LUA_MAKE_INSTALL_OPTIONS} \
   \
   && cd / \
   && rm -r /usr/src/lua
+
+
+ARG LUAROCKS_CONFIGURE_OPTIONS=""
+
+ENV LUAROCKS_VERSION 2.4.2
+ENV LUAROCKS_DOWNLOAD_URL http://luarocks.github.io/luarocks/releases/luarocks-2.4.2.tar.gz
+ENV LUAROCKS_DOWNLOAD_SHA256 0e1ec34583e1b265e0fbafb64c8bd348705ad403fe85967fd05d3a659f74d2e5
+
+
+RUN set -ex \
+  \
+  && runDeps=' \
+    unzip \
+  ' \
+  && apt-get update \
+  && apt-get install -y --no-install-recommends $runDeps \
+  && rm -rf /var/lib/apt/lists/* \
+  \
+  && wget -O luarocks.tar.gz "${LUAROCKS_DOWNLOAD_URL}" \
+  && echo "${LUAROCKS_DOWNLOAD_SHA256} *luarocks.tar.gz" | sha256sum -c - \
+  \
+  && mkdir -p /usr/src/luarocks \
+  && tar -xzf luarocks.tar.gz -C /usr/src/luarocks --strip-components=1 \
+  && rm luarocks.tar.gz \
+  \
+  && cd /usr/src/luarocks \
+  \
+  && ./configure --lua-version=${LUA_MAJOR} --with-lua=/usr/local ${LUAROCKS_CONFIGURE_OPTIONS} \
+  && make build \
+  && make install \
+  \
+  && cd / \
+  && rm -r /usr/src/luarocks
 
 
 CMD [ "lua" ]
