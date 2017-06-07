@@ -18,7 +18,7 @@ RUN set -ex \
   \
   && cd /usr/src/lua \
   \
-  && make linux test \
+  && make linux test MYCFLAGS="-x c++" CC="g++" \
   && make linux install \
   \
   && cd / \
